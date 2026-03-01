@@ -2,6 +2,7 @@ package dev.vetyutnev.sorokinschoolspringbootmvc.controllers;
 
 import dev.vetyutnev.sorokinschoolspringbootmvc.entity.Pet;
 import dev.vetyutnev.sorokinschoolspringbootmvc.services.PetService;
+import dev.vetyutnev.sorokinschoolspringbootmvc.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,11 @@ import java.util.List;
 public class PetController {
 
     private final PetService petService;
+    private final UserService userService;
 
-    public PetController(PetService petService) {
+    public PetController(PetService petService, UserService userService) {
         this.petService = petService;
+        this.userService = userService;
     }
 
     @PostMapping()
@@ -37,11 +40,18 @@ public class PetController {
         return ResponseEntity.status(HttpStatus.OK).body(pet);
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<Pet> updatePet(
-//            @PathVariable Long id,
-//            @Valid @RequestBody Pet pet
-//    ){
-//        Pet updatedPet = petService.updatePet(id, pet);
-//    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Pet> updatePet(
+            @PathVariable Long id,
+            @Valid @RequestBody Pet pet
+    ){
+        Pet updatedPet = petService.updatePet(id, pet);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedPet);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePet(@PathVariable Long id){
+        petService.deletePet(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

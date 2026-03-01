@@ -2,9 +2,8 @@ package dev.vetyutnev.sorokinschoolspringbootmvc.services;
 
 import dev.vetyutnev.sorokinschoolspringbootmvc.entity.Pet;
 import dev.vetyutnev.sorokinschoolspringbootmvc.entity.User;
-import jakarta.validation.Valid;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +18,7 @@ public class PetService {
 
     private final UserService userService;
 
-    public PetService(UserService userService) {
+    public PetService(@Lazy UserService userService) {
         this.userService = userService;
     }
 
@@ -51,7 +50,29 @@ public class PetService {
         return pet;
     }
 
-//    public Pet updatePet(Long id, Pet pet) {
-//
-//    }
+    public Pet updatePet(Long id, Pet pet) {
+        Pet petToUpdate = getPetById(id);
+
+        if (!petToUpdate.getUserId().equals(pet.getUserId())){
+            User previousUser = userService.getUserById(petToUpdate.getUserId());
+            User newUser = userService.getUserById(pet.getUserId());
+
+            previousUser.getPets().remove(petToUpdate);
+            newUser.getPets().add(petToUpdate);
+        }
+
+        petToUpdate.setName(pet.getName());
+        petToUpdate.setUserId(pet.getUserId());
+
+        return petToUpdate;
+    }
+
+    public void deletePet(Long id) {
+        Pet deletedPet = pets.remove(id);
+        if (deletedPet == null){
+            throw new NoSuchElementException("питомец с id %s не найден".formatted(id));
+        }
+        userService.getUserById(deletedPet.getUserId())
+                .getPets().remove(deletedPet);
+    }
 }
