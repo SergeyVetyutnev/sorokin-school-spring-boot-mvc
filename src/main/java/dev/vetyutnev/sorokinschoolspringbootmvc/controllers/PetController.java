@@ -2,7 +2,6 @@ package dev.vetyutnev.sorokinschoolspringbootmvc.controllers;
 
 import dev.vetyutnev.sorokinschoolspringbootmvc.entity.Pet;
 import dev.vetyutnev.sorokinschoolspringbootmvc.services.PetService;
-import dev.vetyutnev.sorokinschoolspringbootmvc.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +14,9 @@ import java.util.List;
 public class PetController {
 
     private final PetService petService;
-    private final UserService userService;
 
-    public PetController(PetService petService, UserService userService) {
+    public PetController(PetService petService) {
         this.petService = petService;
-        this.userService = userService;
     }
 
     @PostMapping()

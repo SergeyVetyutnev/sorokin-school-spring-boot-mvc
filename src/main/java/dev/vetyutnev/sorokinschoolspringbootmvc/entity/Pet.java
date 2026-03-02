@@ -2,6 +2,7 @@ package dev.vetyutnev.sorokinschoolspringbootmvc.entity;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class Pet {
 
@@ -10,6 +11,7 @@ public class Pet {
     @NotBlank(message = "имя не может быть пустым")
     private String name;
 
+    @NotNull(message = "id владельца не может быть пустым")
     private Long userId;
 
     public Pet() {
