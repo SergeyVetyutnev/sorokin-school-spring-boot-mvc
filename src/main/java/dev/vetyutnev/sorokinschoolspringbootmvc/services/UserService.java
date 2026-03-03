@@ -13,10 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class UserService {
 
+    private final PetService petService;
     private final Map<Long, User> users = new ConcurrentHashMap<>();
     private Long nextId = 0L;
-
-    private final PetService petService;
 
     public UserService(PetService petService) {
         this.petService = petService;
@@ -36,6 +35,11 @@ public class UserService {
     }
 
     public User createUser(User user) {
+
+        if (user == null) {
+            throw new IllegalArgumentException("Данные о юзере не могут быть null");
+        }
+
         User newUser = new User(
                 ++nextId,
                 user.getName(),
@@ -74,6 +78,6 @@ public class UserService {
             }
         }
 
-        users.remove(userToDelete);
+        users.remove(userToDelete.getId());
     }
 }

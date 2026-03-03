@@ -2,6 +2,7 @@ package dev.vetyutnev.sorokinschoolspringbootmvc.controllers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import dev.vetyutnev.sorokinschoolspringbootmvc.dto.PetDto;
 import dev.vetyutnev.sorokinschoolspringbootmvc.entity.Pet;
 import dev.vetyutnev.sorokinschoolspringbootmvc.entity.User;
 import dev.vetyutnev.sorokinschoolspringbootmvc.services.PetService;
@@ -36,14 +37,14 @@ class PetControllerTest {
     @Test
     @DisplayName("POST /api/pets должен вернуть 201 и питомца")
     void createPet_ShouldReturnCreatedWhenValid() throws Exception {
-        Pet inputPet = new Pet(null, "pet_name", 1L);
+        PetDto inputPetDto = new PetDto("pet_name", 1L);
         Pet savedPet = new Pet(10L, "pet_name", 1L);
 
         when(petService.createPet(any(Pet.class))).thenReturn(savedPet);
 
         mockMvc.perform(post("/api/pets")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(inputPet)))
+                        .content(objectMapper.writeValueAsString(inputPetDto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(10L))
                 .andExpect(jsonPath("$.name").value("pet_name"));

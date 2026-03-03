@@ -13,8 +13,9 @@ import java.util.NoSuchElementException;
 @Service
 public class PetService {
 
-    Map<Long, Pet> pets = new HashMap<>();
-    Long nextId = 0L;
+    private Map<Long, Pet> pets = new HashMap<>();
+
+    private Long nextId = 0L;
 
     private final UserService userService;
 
@@ -23,6 +24,14 @@ public class PetService {
     }
 
     public Pet createPet(Pet pet) {
+
+        if (pet == null) {
+            throw new IllegalArgumentException("Данные о питомце не могут быть null");
+        }
+
+        if (pet.getUserId() == null) {
+            throw new IllegalArgumentException("У питомца должен быть указан ID владельца");
+        }
 
         User owner = userService.getUserById(pet.getUserId());
 

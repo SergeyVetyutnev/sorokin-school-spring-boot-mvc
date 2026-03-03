@@ -1,5 +1,6 @@
 package dev.vetyutnev.sorokinschoolspringbootmvc.controllers;
 
+import dev.vetyutnev.sorokinschoolspringbootmvc.dto.UserDto;
 import dev.vetyutnev.sorokinschoolspringbootmvc.entity.User;
 import dev.vetyutnev.sorokinschoolspringbootmvc.services.UserService;
 import jakarta.validation.Valid;
@@ -30,8 +31,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user){
-        User createdUser = userService.createUser(user);
+    public ResponseEntity<User> createUser(@Valid @RequestBody UserDto userDto){
+        User userToCreate = new User();
+        userToCreate.setName(userDto.name());
+        userToCreate.setEmail(userDto.email());
+        userToCreate.setAge(userDto.age());
+
+        User createdUser = userService.createUser(userToCreate);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
@@ -45,9 +51,9 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

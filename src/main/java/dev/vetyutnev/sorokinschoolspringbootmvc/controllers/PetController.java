@@ -1,5 +1,6 @@
 package dev.vetyutnev.sorokinschoolspringbootmvc.controllers;
 
+import dev.vetyutnev.sorokinschoolspringbootmvc.dto.PetDto;
 import dev.vetyutnev.sorokinschoolspringbootmvc.entity.Pet;
 import dev.vetyutnev.sorokinschoolspringbootmvc.services.PetService;
 import jakarta.validation.Valid;
@@ -19,9 +20,13 @@ public class PetController {
         this.petService = petService;
     }
 
-    @PostMapping()
-    public ResponseEntity<Pet> createPet(@Valid @RequestBody Pet pet){
-        Pet newPet = petService.createPet(pet);
+    @PostMapping
+    public ResponseEntity<Pet> createPet(@Valid @RequestBody PetDto petDto){
+        Pet petToCreate = new Pet();
+        petToCreate.setName(petDto.name());
+        petToCreate.setUserId(petDto.userId());
+
+        Pet newPet = petService.createPet(petToCreate);
         return ResponseEntity.status(HttpStatus.CREATED).body(newPet);
     }
 
