@@ -1,0 +1,87 @@
+package dev.vetyutnev.sorokinschoolspringbootmvc.services;
+
+import dev.vetyutnev.sorokinschoolspringbootmvc.entity.Pet;
+import dev.vetyutnev.sorokinschoolspringbootmvc.entity.User;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
+@Service
+public class PetService {
+
+    private Map<Long, Pet> pets = new HashMap<>();
+
+    private Long nextId = 0L;
+
+    private final UserService userService;
+
+    public PetService(@Lazy UserService userService) {
+        this.userService = userService;
+    }
+
+    public Pet createPet(Pet pet) {
+
+        if (pet == null) {
+            throw new IllegalArgumentException("Данные о питомце не могут быть null");
+        }
+
+        if (pet.getUserId() == null) {
+            throw new IllegalArgumentException("У питомца должен быть указан ID владельца");
+        }
+
+        User owner = userService.getUserById(pet.getUserId());
+
+        Pet newPet = new Pet(
+                ++nextId,
+                pet.getName(),
+                pet.getUserId()
+        );
+
+        pets.put(nextId, newPet);
+        owner.getPets().add(newPet);
+
+        return newPet;
+    }
+
+    public List<Pet> getAllPets() {
+        return pets.values().stream().toList();
+    }
+
+    public Pet getPetById(Long id) {
+        Pet pet = pets.get(id);
+        if (pet == null){
+            throw new NoSuchElementException("питомец с id %s не найден".formatted(id));
+        }
+        return pet;
+    }
+
+    public Pet updatePet(Long id, Pet pet) {
+        Pet petToUpdate = getPetById(id);
+
+        if (!petToUpdate.getUserId().equals(pet.getUserId())){
+            User previousUser = userService.getUserById(petToUpdate.getUserId());
+            User newUser = userService.getUserById(pet.getUserId());
+
+            previousUser.getPets().remove(petToUpdate);
+            newUser.getPets().add(petToUpdate);
+        }
+
+        petToUpdate.setName(pet.getName());
+        petToUpdate.setUserId(pet.getUserId());
+
+        return petToUpdate;
+    }
+
+    public void deletePet(Long id) {
+        Pet deletedPet = pets.remove(id);
+        if (deletedPet == null){
+            throw new NoSuchElementException("питомец с id %s не найден".formatted(id));
+        }
+        userService.getUserById(deletedPet.getUserId())
+                .getPets().remove(deletedPet);
+    }
+}
